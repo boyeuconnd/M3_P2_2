@@ -1,0 +1,222 @@
+# M3_P2_2
+Bài tập Xác định khoá chính và khoá ngoại của bảng
+mysql> create database bank_accounts_mng;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| bank_accounts_mng  |
+| classicmodels      |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sakila             |
+| sys                |
+| testdatabase       |
+| world              |
++--------------------+
+9 rows in set (0.00 sec)
+
+mysql> use bank_accounts_mng;
+Database changed
+mysql> create table customers(
+    -> customer_number int(6) auto_increment primary key,
+    -> fullname varchar(200) not null,
+    -> address varchar(500),
+    -> email varchar(250) unique,
+    -> phone varchar(12));
+Query OK, 0 rows affected, 1 warning (0.05 sec)
+
+mysql> describe customers;
++-----------------+--------------+------+-----+---------+----------------+
+| Field           | Type         | Null | Key | Default | Extra          |
++-----------------+--------------+------+-----+---------+----------------+
+| customer_number | int          | NO   | PRI | NULL    | auto_increment |
+| fullname        | varchar(200) | NO   |     | NULL    |                |
+| address         | varchar(500) | YES  |     | NULL    |                |
+| email           | varchar(250) | YES  | UNI | NULL    |                |
+| phone           | varchar(12)  | YES  |     | NULL    |                |
++-----------------+--------------+------+-----+---------+----------------+
+5 rows in set (0.00 sec)
+
+mysql> create table accounts(
+    -> account_number int(6) primary key,
+    -> account_type varchar(50) not null,
+    -> open_date DATE,
+    -> balance int not null default 0);
+Query OK, 0 rows affected, 1 warning (0.04 sec)
+
+mysql> describle accounts;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'describle accounts' at line 1
+mysql> describle accounts;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'describle accounts' at line 1
+mysql> show tables;
++-----------------------------+
+| Tables_in_bank_accounts_mng |
++-----------------------------+
+| accounts                    |
+| customers                   |
++-----------------------------+
+2 rows in set (0.00 sec)
+
+mysql> describe accounts;
++----------------+-------------+------+-----+---------+-------+
+| Field          | Type        | Null | Key | Default | Extra |
++----------------+-------------+------+-----+---------+-------+
+| account_number | int         | NO   | PRI | NULL    |       |
+| account_type   | varchar(50) | NO   |     | NULL    |       |
+| open_date      | date        | YES  |     | NULL    |       |
+| balance        | int         | NO   |     | 0       |       |
++----------------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> create table transactions(
+    -> tran_number int primary key,
+    -> account_number int(12) not null,
+    -> tran_date DATE not null,
+    -> amounts int(20) not null default 0,
+    -> descriptions text);
+Query OK, 0 rows affected, 2 warnings (0.05 sec)
+
+mysql> describe transactions;
++----------------+------+------+-----+---------+-------+
+| Field          | Type | Null | Key | Default | Extra |
++----------------+------+------+-----+---------+-------+
+| tran_number    | int  | NO   | PRI | NULL    |       |
+| account_number | int  | NO   |     | NULL    |       |
+| tran_date      | date | NO   |     | NULL    |       |
+| amounts        | int  | NO   |     | 0       |       |
+| descriptions   | text | YES  |     | NULL    |       |
++----------------+------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> alter table accounts add foreign key(customer_number) references customers(customers_number);
+ERROR 1072 (42000): Key column 'customer_number' doesn't exist in table
+mysql> alter table accounts add customer_number int(7) not null foreign key references customers(customers_number);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'foreign key references customers(customers_number)' at line 1
+mysql> alter table accounts add customer_number int(7) not null,
+    -> add foreign key (customer_number) references customers(customers_number);
+ERROR 3734 (HY000): Failed to add the foreign key constraint. Missing column 'customers_number' for constraint 'accounts_ibfk_1' in the referenced table 'customers'
+mysql> alter table accounts add customer_number int(7) not null;
+Query OK, 0 rows affected, 1 warning (0.02 sec)
+Records: 0  Duplicates: 0  Warnings: 1
+
+mysql> alter table accounts add foreign key(customers_number) refeences customers(customer_number);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'refeences customers(customer_number)' at line 1
+mysql> describle customers;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'describle customers' at line 1
+mysql> describle customer;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'describle customer' at line 1
+mysql> describe customers;
++-----------------+--------------+------+-----+---------+----------------+
+| Field           | Type         | Null | Key | Default | Extra          |
++-----------------+--------------+------+-----+---------+----------------+
+| customer_number | int          | NO   | PRI | NULL    | auto_increment |
+| fullname        | varchar(200) | NO   |     | NULL    |                |
+| address         | varchar(500) | YES  |     | NULL    |                |
+| email           | varchar(250) | YES  | UNI | NULL    |                |
+| phone           | varchar(12)  | YES  |     | NULL    |                |
++-----------------+--------------+------+-----+---------+----------------+
+5 rows in set (0.00 sec)
+
+mysql> describe accounts;
++-----------------+-------------+------+-----+---------+-------+
+| Field           | Type        | Null | Key | Default | Extra |
++-----------------+-------------+------+-----+---------+-------+
+| account_number  | int         | NO   | PRI | NULL    |       |
+| account_type    | varchar(50) | NO   |     | NULL    |       |
+| open_date       | date        | YES  |     | NULL    |       |
+| balance         | int         | NO   |     | 0       |       |
+| customer_number | int         | NO   |     | NULL    |       |
++-----------------+-------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> alter table accounts add foreign key(customers_number) references customers(customer_number);
+ERROR 1072 (42000): Key column 'customers_number' doesn't exist in table
+mysql> alter table accounts add foreign key(customer_number) references customers(customer_number);
+Query OK, 0 rows affected (0.12 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> describe accounts;
++-----------------+-------------+------+-----+---------+-------+
+| Field           | Type        | Null | Key | Default | Extra |
++-----------------+-------------+------+-----+---------+-------+
+| account_number  | int         | NO   | PRI | NULL    |       |
+| account_type    | varchar(50) | NO   |     | NULL    |       |
+| open_date       | date        | YES  |     | NULL    |       |
+| balance         | int         | NO   |     | 0       |       |
+| customer_number | int         | NO   | MUL | NULL    |       |
++-----------------+-------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> describle transactions;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'describle transactions' at line 1
+mysql> describe transactions;
++----------------+------+------+-----+---------+-------+
+| Field          | Type | Null | Key | Default | Extra |
++----------------+------+------+-----+---------+-------+
+| tran_number    | int  | NO   | PRI | NULL    |       |
+| account_number | int  | NO   |     | NULL    |       |
+| tran_date      | date | NO   |     | NULL    |       |
+| amounts        | int  | NO   |     | 0       |       |
+| descriptions   | text | YES  |     | NULL    |       |
++----------------+------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> alter table transactions add account_number int not null;
+ERROR 1060 (42S21): Duplicate column name 'account_number'
+mysql> alter table add foreign key(account_number) references accounts(account_number);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'add foreign key(account_number) references accounts(account_number)' at line 1
+mysql> alter table transactions
+    -> add foreign key(account_number) references accounts(account_number);
+Query OK, 0 rows affected (0.12 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> describe customers, accounts, transactions;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ', accounts, transactions' at line 1
+mysql> describe customers,
+    -> describe accounts;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ',
+describe accounts' at line 1
+mysql> describe customers,
+    -> ;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ',' at line 1
+mysql> describe customers;
++-----------------+--------------+------+-----+---------+----------------+
+| Field           | Type         | Null | Key | Default | Extra          |
++-----------------+--------------+------+-----+---------+----------------+
+| customer_number | int          | NO   | PRI | NULL    | auto_increment |
+| fullname        | varchar(200) | NO   |     | NULL    |                |
+| address         | varchar(500) | YES  |     | NULL    |                |
+| email           | varchar(250) | YES  | UNI | NULL    |                |
+| phone           | varchar(12)  | YES  |     | NULL    |                |
++-----------------+--------------+------+-----+---------+----------------+
+5 rows in set (0.00 sec)
+
+mysql> describe accounts;
++-----------------+-------------+------+-----+---------+-------+
+| Field           | Type        | Null | Key | Default | Extra |
++-----------------+-------------+------+-----+---------+-------+
+| account_number  | int         | NO   | PRI | NULL    |       |
+| account_type    | varchar(50) | NO   |     | NULL    |       |
+| open_date       | date        | YES  |     | NULL    |       |
+| balance         | int         | NO   |     | 0       |       |
+| customer_number | int         | NO   | MUL | NULL    |       |
++-----------------+-------------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> describe transactions;
++----------------+------+------+-----+---------+-------+
+| Field          | Type | Null | Key | Default | Extra |
++----------------+------+------+-----+---------+-------+
+| tran_number    | int  | NO   | PRI | NULL    |       |
+| account_number | int  | NO   | MUL | NULL    |       |
+| tran_date      | date | NO   |     | NULL    |       |
+| amounts        | int  | NO   |     | 0       |       |
+| descriptions   | text | YES  |     | NULL    |       |
++----------------+------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql>
